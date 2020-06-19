@@ -5,7 +5,7 @@ import torch.nn as nn
 import numpy as np
 import torch
 
-class VED(nn.Module):
+class VariationalEncoderDecoder(nn.Module):
     def __init__(self):
         super(VED, self).__init__()
         self.encoder = Encoder()

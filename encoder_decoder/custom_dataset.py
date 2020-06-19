@@ -19,19 +19,15 @@ class CustomDataset(Dataset):
     def __getitem__(self, index):
 
         frame = index*5
-        rgb_name   = os.path.join(self.image_path ,  'img',    'Trivial_%s_img.png'%frame)
         depth_name = os.path.join(self.image_path ,  'depth',  'Trivial_%s_depth.png'%frame)
         seg_name   = os.path.join(self.image_path ,  'layer',  'Trivial_%s_layer.png'%frame)
 
-        rgb_data   = io.imread(rgb_name)
-        # rgb_data   = Image.open(self.image_path + rgb_name)
         depth_data = io.imread(depth_name)
         seg_data   = io.imread(seg_name)
 
         og = og_from_voxel_coords(os.path.join(self.voxels_path,'voxels%s.txt'%frame))
 
         s = seg_data.shape
-        print(s)
         onehot = np.zeros((11, *s[:2]))
         for i in range(s[0]):
             for j in range(s[1]):
@@ -44,7 +40,7 @@ class CustomDataset(Dataset):
         onehot[10] = depth_data[:,:,0]
 
         onehot = torch.as_tensor(onehot,dtype=torch.float32)
-        og = torch.as_tensor(og,dtype=torch.long)
+        og     = torch.as_tensor(og,dtype=torch.long)
         return onehot, og
 
     def __len__(self):  # return count of sample we have
