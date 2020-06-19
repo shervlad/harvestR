@@ -71,10 +71,10 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-observations/camera/depth/*
-observations/camera/img/*
-observations/camera/layer/*
-observations/voxels/*
+# observations/camera/depth/*
+# observations/camera/img/*
+# observations/camera/layer/*
+# observations/voxels/*
 
 
 .vscode/*
