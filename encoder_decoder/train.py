@@ -24,3 +24,6 @@ for epoch in range(100):
         print("Loss: %s"%L.item())
         L.backward()
         optimizer.step()
+
+        if i_batch%10 == 0:
+            torch.save(ved.state_dict(),"ved.pt")

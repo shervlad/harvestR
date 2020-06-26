@@ -50,7 +50,6 @@ public class ColorEncoding
 
 	public static Color EncodeLayerAsColor(int layer, bool grayscale = true)
 	{
-		Debug.Log(layer);
 		if(grayscale){
 			var c = new Color(layer/255.0f,layer/255.0f,layer/255.0f);
 			return c;

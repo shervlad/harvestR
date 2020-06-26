@@ -7,7 +7,7 @@ import torch
 
 class VariationalEncoderDecoder(nn.Module):
     def __init__(self):
-        super(VED, self).__init__()
+        super(VariationalEncoderDecoder, self).__init__()
         self.encoder = Encoder()
         self.decoder = Decoder()
         loc = torch.as_tensor(np.zeros((128)),dtype=torch.float32)

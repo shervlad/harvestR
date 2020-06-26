@@ -12,8 +12,24 @@ public class VoxelSensor : MonoBehaviour
     int frame = 0;
     [SerializeField] MeshType type = MeshType.Volume;
     [SerializeField] protected ComputeShader voxelizer;
-    [SerializeField] protected int resolution = 10;
-    [SerializeField] protected bool useUV = false;
+    private int[] resolutions = {20, //Default
+                                 20, //
+                                 20, //
+                                 20, //
+                                 20, //
+                                 20, //
+                                 20, //
+                                 20, //
+                                 100, // wall
+                                 20, // leaf
+                                 20, // stem
+                                 20, // peduncle
+                                 20, // ripe_fruit
+                                 20, // unripe_fruit
+                                 20, // gripper
+                                 20, // arm
+                                 20};// robot
+    [SerializeField] protected bool useUV;
     Vector3 center;
     [SerializeField] protected int radius;
     // Start is called before the first frame update
@@ -31,19 +47,18 @@ public class VoxelSensor : MonoBehaviour
         }
         Collider[] hitColliders = Physics.OverlapSphere(center, radius);
         List<Voxel_t> allVoxels = new List<Voxel_t>();
-        List<string> tags = new List<string>();
+        List<int> layers = new List<int>();
         Debug.Log(string.Format("{0} objects",hitColliders.Length));
         for (int i=0;i < hitColliders.Length;i++)
         {
-            if(hitColliders[i].tag == "robot")
+            int layer = hitColliders[i].gameObject.layer;
+            if(hitColliders[i].tag == "robot" || layer < 8)
                 continue;
-            if(hitColliders[i].tag == "stem")
-                Debug.Log("STEM!");
             // Debug.Log(hitColliders[i].name);
             Mesh mesh = hitColliders[i].GetComponent<MeshFilter>().sharedMesh;
             var scale = hitColliders[i].transform.lossyScale.magnitude;
             // int res = (int)(resolution*scale);
-            int res = resolution;
+            int res = resolutions[layer];
             var data = GPUVoxelizer.Voxelize(voxelizer, mesh, res, (type == MeshType.Volume));
             // voxel
             Voxel_t[] voxels = data.GetData();
@@ -51,7 +66,7 @@ public class VoxelSensor : MonoBehaviour
             {
                 voxels[j].position = hitColliders[i].transform.TransformPoint(voxels[j].position);
                 voxels[j].position = transform.InverseTransformPoint(voxels[j].position);
-                tags.Add(string.Format("{0}",hitColliders[i].gameObject.layer));
+                layers.Add(layer);
             }
             allVoxels.AddRange(voxels);
             // GetComponent<MeshFilter>().sharedMesh = VoxelMesh.Build(voxels, data.UnitLength, useUV);
@@ -68,9 +83,11 @@ public class VoxelSensor : MonoBehaviour
                     float x = v.position.x;
                     float y = v.position.y;
                     float z = v.position.z;
-                    string tag = tags[i];
+                    int layer = layers[i];
+                    float U = v.uv.x;
+                    float V = v.uv.y;
                     if(!v.IsEmpty()){
-                        file.WriteLine(string.Format("{0},{1},{2},{3}",x,y,z,tag));
+                        file.WriteLine(string.Format("{0},{1},{2},{3},{4},{5}",x,y,z,layer,U,V));
                     }
                 }
             }

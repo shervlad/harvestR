@@ -11,23 +11,24 @@ def og_from_voxel_coords(filename, bound=0.5, scale = 128):
     span  = 2*bound
     gs = int(span*scale) #grid size
 
-    num_layers = 8
+    num_layers = 9
 
     all_coords = [[] for i in range(num_layers)]
 
     f = open(filename,'r')
     for l in f:
-        x,y,z,layeridx = l.replace('\n','').split(',')
+        x,y,z,layeridx,u,v = l.replace('\n','').split(',')
         # print(tag)
         x = float(x)
         y = float(y)
         z = float(z)
         layeridx = int(layeridx)
         if 16 > layeridx > 7:
-            all_coords[layeridx-8].append([x,y,z])
+            all_coords[layeridx-7].append([x,y,z])
+
 
     og = np.zeros((gs,gs,gs))
-    for classidx in range(num_layers):
+    for classidx in range(1,num_layers):
         coords = np.array(all_coords[classidx])
         coords = np.array(coords).reshape(-1,3)
 
@@ -77,8 +78,14 @@ def plot_og(og, dest=None, show=False, gs=128):
     ax.set_ylabel("y axis")
     ax.set_zlabel("z axis")
 
-    colors = ['blue','green','green','yellow','red','brown','black','black','black']
-    for c,color in zip(og,colors):
+    #          empty    wall      leaf      stem      peduncle   ripe_fruit  unripe_fruit  gripper    arm
+    colors = ['white', 'blue',   'green',  'green',  'yellow',   'red',      'brown',      'black',  'black']
+    ogs = []
+    for classidx in range(9):
+        thisog = (og==classidx)*1
+        ogs.append(thisog)
+
+    for c,color in zip(ogs[1:],colors[1:]):
         x,y,z= c.nonzero()
         ax.scatter(x, y, z, marker='s',s=1,color=color)
     if show:
